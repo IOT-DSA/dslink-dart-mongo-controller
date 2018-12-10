@@ -8,6 +8,7 @@ import 'utils.dart';
 void main() {
   final uriString = Platform.environment['DB_URI'];
   final username = Platform.environment['DB_USERNAME'];
+  final writerUser = Platform.environment['DB_USERNAME_WRITER'];
   final password = Platform.environment['DB_PASSWORD'];
 
   final simpleDataCount = 9;
@@ -316,6 +317,37 @@ void main() {
       ]).toList();
 
       expect((result.first['count'] as num).round(), 5);
+    });
+  });
+
+  group('insert', () {
+    final client = new MongoClient(uri, writerUser, password);
+    String collectionName;
+
+    setUp(() {
+      collectionName = generateRandomCollectionName();
+    });
+
+    tearDown(() async {
+      await client.dropCollection(collectionName);
+    });
+
+    test('successful insert', () async {
+      final doc = {'id': 'Hello!'};
+
+      await client.insert(collectionName, doc);
+
+      var count = await client.count(collectionName, {});
+      expect(count, 1);
+    });
+
+    group('read only user', () {
+      final client = new MongoClient(uri, username, password);
+      test('throws when read only collection', () async {
+        final doc = {};
+        await expectThrowsAsync(
+            () => client.insert(collectionName, doc), "Permission denied.");
+      });
     });
   });
 }

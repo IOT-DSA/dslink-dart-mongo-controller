@@ -49,5 +49,12 @@ void main() {
       verify(provider.setNode('$path/${AggregateNode.pathName}',
           argThat(const isInstanceOf<AggregateNode>())));
     });
+
+    test('insert node', () {
+      node.onCreated();
+
+      verify(provider.setNode('$path/${InsertNode.pathName}',
+          argThat(const isInstanceOf<InsertNode>())));
+    });
   });
 }

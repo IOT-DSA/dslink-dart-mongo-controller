@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:test/test.dart';
 
 expectThrowsAsync(func, dynamic expected) async {
@@ -48,4 +50,9 @@ class _ContainsAllInOrder implements Matcher {
   Description describeMismatch(item, Description mismatchDescription,
           Map matchState, bool verbose) =>
       mismatchDescription.add(_test(item, matchState));
+}
+
+String generateRandomCollectionName() {
+  var rng = new Random();
+  return new List.generate(10, (_) => rng.nextInt(9)).join();
 }

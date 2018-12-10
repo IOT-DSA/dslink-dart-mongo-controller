@@ -77,6 +77,7 @@ class MongoClient {
     try {
       await db.open();
       await db.close();
+
       return AuthResult.ok;
     } on SocketException catch (_) {
       return AuthResult.notFound;
@@ -165,6 +166,27 @@ class MongoClient {
     final collection = db.collection(collectionName);
 
     yield* collection.aggregateToStream(pipeline);
+  }
+
+  Future<Null> insert(String collectionName, Map document) async {
+    final db = await connectionPool.connect();
+    final collection = db.collection(collectionName);
+
+    try {
+      await collection.insert(document);
+    } catch (e) {
+      if (e is Map && e['code'] == 13) {
+        throw 'Permission denied.';
+      }
+    }
+  }
+
+  /// For testing purpose only. Not implemented in the DSLink
+  Future<Null> dropCollection(String collectionName) async {
+    final db = await connectionPool.connect();
+    final collection = db.collection(collectionName);
+
+    await collection.drop();
   }
 }
 

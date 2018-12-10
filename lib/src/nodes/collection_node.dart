@@ -46,5 +46,9 @@ class CollectionNode extends SimpleNode {
     final aggregateNode = new AggregateNode(
         '$path/${AggregateNode.pathName}', client, collectionName);
     provider.setNode(aggregateNode.path, aggregateNode);
+
+    final insertNode =
+        new InsertNode('$path/${InsertNode.pathName}', client, collectionName);
+    provider.setNode(insertNode.path, insertNode);
   }
 }
